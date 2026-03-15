@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>대타 앱 – UI 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #F0F0F0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  /* ── 공통 폰 프레임 ── */
+  .phone {
+    width: 375px;
+    height: 812px;
+    border-radius: 44px;
+    background: #fff;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.25), 0 0 0 2px #ccc;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-label {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #666;
+    margin-bottom: 12px;
+  }
+  .screen { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .screen-content { flex: 1; overflow-y: auto; background: #FFF8F5; }
+
+  /* ── 헤더 ── */
+  .header {
+    background: linear-gradient(135deg, #FF7043 0%, #FF5722 100%);
+    padding: 56px 24px 24px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .header-row { display: flex; justify-content: space-between; align-items: flex-start; }
+  .greeting { font-size: 13px; opacity: 0.85; margin-bottom: 2px; }
+  .store-name { font-size: 22px; font-weight: 800; }
+  .invite-code { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+  .invite-code span { font-weight: 800; letter-spacing: 2px; }
+  .logout-btn {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* ── 섹션 헤더 ── */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px 6px;
+  }
+  .section-title { font-size: 18px; font-weight: 800; color: #212121; }
+  .add-btn {
+    background: #FF7043;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.1s;
+  }
+  .add-btn:hover { transform: scale(1.05); }
+
+  /* ── 카드 ── */
+  .cards { padding: 10px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .card-date { font-size: 17px; font-weight: 800; color: #212121; }
+  .badge {
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .badge-open { background: #E8F5E9; color: #4CAF50; }
+  .badge-closed { background: #F5F5F5; color: #9E9E9E; }
+  .badge-pending { background: #FFF3E0; color: #FF9800; }
+  .badge-confirmed { background: #E8F5E9; color: #4CAF50; }
+  .card-time { font-size: 14px; color: #757575; margin-bottom: 4px; }
+  .card-applicants { font-size: 13px; color: #FF7043; font-weight: 600; }
+  .tap-hint { font-size: 12px; color: #FF7043; font-weight: 600; margin-top: 6px; }
+
+  /* ── 하단 탭 ── */
+  .tab-bar {
+    display: flex;
+    background: #fff;
+    border-top: 1px solid #F0F0F0;
+    height: 60px;
+    flex-shrink: 0;
+  }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; gap: 2px; }
+  .tab-icon { font-size: 22px; }
+  .tab-label { font-size: 11px; font-weight: 600; }
+  .tab.active .tab-label { color: #FF7043; }
+  .tab:not(.active) .tab-label { color: #9E9E9E; }
+
+  /* ── 로그인 화면 ── */
+  .login-screen { background: #FFF8F5; display: flex; flex-direction: column; justify-content: center; padding: 28px; flex: 1; }
+  .logo-box { text-align: center; margin-bottom: 36px; }
+  .logo-emoji { font-size: 64px; }
+  .logo-title { font-size: 32px; font-weight: 900; color: #FF7043; letter-spacing: -1px; }
+  .logo-sub { font-size: 14px; color: #9E9E9E; margin-top: 4px; }
+  .form-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  .form-label { font-size: 13px; font-weight: 600; color: #757575; margin-bottom: 6px; margin-top: 12px; display: block; }
+  .form-input {
+    background: #F5F5F5;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    color: #212121;
+    width: 100%;
+    border: none;
+    font-family: inherit;
+    outline: none;
+  }
+  .form-btn {
+    background: #FF7043;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 24px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+  }
+  .form-btn:hover { opacity: 0.9; }
+  .link-text { text-align: center; color: #9E9E9E; font-size: 13px; margin-top: 14px; }
+  .link-text span { color: #FF7043; font-weight: 700; cursor: pointer; }
+
+  /* ── 신청자 화면 ── */
+  .applicant-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    margin-bottom: 12px;
+  }
+  .applicant-name { font-size: 16px; font-weight: 700; color: #212121; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .accept-btn, .reject-btn {
+    flex: 1;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: transform 0.1s;
+  }
+  .accept-btn:hover, .reject-btn:hover { transform: scale(1.03); }
+  .accept-btn { background: #E8F5E9; color: #4CAF50; }
+  .reject-btn { background: #FFEBEE; color: #F44336; }
+
+  /* ── 캘린더 ── */
+  .calendar-grid { padding: 16px; }
+  .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .cal-month { font-size: 18px; font-weight: 800; color: #212121; }
+  .cal-arrow { color: #FF7043; font-size: 18px; cursor: pointer; }
+  .cal-days-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 8px; }
+  .cal-day-name { font-size: 11px; font-weight: 600; color: #9E9E9E; padding: 4px 0; }
+  .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 600;
+    color: #212121;
+    position: relative;
+    cursor: pointer;
+  }
+  .cal-day.today { background: #FF7043; color: #fff; }
+  .cal-day.has-event::after {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #FF7043;
+    position: absolute;
+    bottom: 4px;
+  }
+  .cal-day.today.has-event::after { background: #fff; }
+  .cal-day.empty { opacity: 0; cursor: default; }
+
+  /* ── 대타 신청 화면 ── */
+  .shift-detail-hero {
+    background: linear-gradient(135deg, #FF7043 0%, #FF5722 100%);
+    padding: 56px 28px 28px;
+    color: white;
+  }
+  .shift-back { font-size: 15px; opacity: 0.85; margin-bottom: 14px; cursor: pointer; }
+  .shift-label-small { font-size: 13px; opacity: 0.7; margin-bottom: 6px; }
+  .shift-date-big { font-size: 34px; font-weight: 900; margin-bottom: 6px; }
+  .shift-time-big { font-size: 18px; opacity: 0.9; margin-bottom: 14px; }
+  .status-pill {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(76,175,80,0.25);
+    color: #A5D6A7;
+  }
+  .apply-btn-big {
+    background: linear-gradient(135deg, #FF7043, #FF5722);
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 20px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    margin: 24px 0;
+    box-shadow: 0 8px 20px rgba(255,112,67,0.4);
+    transition: transform 0.15s;
+  }
+  .apply-btn-big:hover { transform: scale(1.02); }
+
+  /* ── 회원가입 역할 선택 ── */
+  .role-row { display: flex; gap: 12px; margin-top: 8px; }
+  .role-card {
+    flex: 1;
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    background: #FAFAFA;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .role-card.active { border-color: #FF7043; background: #FFF3EF; }
+  .role-card-emoji { font-size: 14px; font-weight: 700; color: #212121; display: block; margin-bottom: 4px; }
+  .role-card-desc { font-size: 11px; color: #9E9E9E; }
+  .role-card.active .role-card-desc { color: #FF7043; }
+
+  /* ── legend ── */
+  .legend { display: flex; justify-content: center; gap: 20px; padding: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #757575; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ── 레이아웃 타이틀 ── */
+  .section-group { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ 1. 로그인 ═══════════════════════ -->
+<div class="section-group">
+  <p class="phone-label">① 로그인 화면</p>
+  <div class="phone">
+    <div class="screen">
+      <div class="screen-content">
+        <div class="login-screen">
+          <div class="logo-box">
+            <div class="logo-emoji">☕</div>
+            <div class="logo-title">대타 앱</div>
+            <div class="logo-sub">알바 대타 관리 플랫폼</div>
+          </div>
+          <div class="form-card">
+            <label class="form-label">이메일</label>
+            <input class="form-input" value="boss@cafe.com" readonly />
+            <label class="form-label" style="margin-top:12px">비밀번호</label>
+            <input class="form-input" type="password" value="password" readonly />
+            <button class="form-btn">로그인</button>
+            <p class="link-text">계정이 없으신가요? <span>회원가입</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ 2. 회원가입 ═══════════════════════ -->
+<div class="section-group">
+  <p class="phone-label">② 회원가입 (역할 선택)</p>
+  <div class="phone">
+    <div class="screen">
+      <div class="screen-content" style="padding: 28px; padding-top: 60px;">
+        <p style="color:#FF7043;font-size:15px;margin-bottom:8px;cursor:pointer">← 뒤로</p>
+        <h2 style="font-size:28px;font-weight:800;color:#212121;margin-bottom:24px">회원가입</h2>
+        <div class="form-card">
+          <label class="form-label" style="margin-top:0">나는 누구인가요?</label>
+          <div class="role-row">
+            <div class="role-card">
+              <span class="role-card-emoji">👑 사장님</span>
+              <span class="role-card-desc">매장 관리 및 대타 요청</span>
+            </div>
+            <div class="role-card active">
+              <span class="role-card-emoji">👤 알바생</span>
+              <span class="role-card-desc">대타 신청 및 일정 확인</span>
+            </div>
+          </div>
+          <label class="form-label">이름</label>
+          <input class="form-input" value="김알바" readonly />
+          <label class="form-label">이메일</label>
+          <input class="form-input" value="alba@email.com" readonly />
+          <label class="form-label">비밀번호</label>
+          <input class="form-input" type="password" value="password" readonly />
+          <button class="form-btn">가입하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ 3. 사장님 홈 ═══════════════════════ -->
+<div class="section-group">
+  <p class="phone-label">③ 사장님 홈 (대타 목록)</p>
+  <div class="phone">
+    <div class="screen">
+      <div class="header" style="flex-shrink:0">
+        <div class="header-row">
+          <div>
+            <div class="greeting">안녕하세요, 홍사장님 👋</div>
+            <div class="store-name">☕ 스타벅스 강남점</div>
+            <div class="invite-code">초대코드: <span>A1B2C3</span></div>
+          </div>
+          <button class="logout-btn">로그아웃</button>
+        </div>
+      </div>
+      <div class="screen-content">
+        <div class="section-header">
+          <span class="section-title">대타 요청 목록</span>
+          <button class="add-btn">+ 요청하기</button>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-top">
+              <span class="card-date">2024-03-20</span>
+              <span class="badge badge-open">모집 중</span>
+            </div>
+            <div class="card-time">🕐 18:00 ~ 22:00</div>
+            <div class="card-applicants">신청자 2명</div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <span class="card-date">2024-03-22</span>
+              <span class="badge badge-open">모집 중</span>
+            </div>
+            <div class="card-time">🕐 10:00 ~ 14:00</div>
+            <div class="card-applicants">신청자 0명</div>
+          </div>
+          <div class="card" style="opacity:0.6">
+            <div class="card-top">
+              <span class="card-date">2024-03-18</span>
+              <span class="badge badge-closed">마감</span>
+            </div>
+            <div class="card-time">🕐 14:00 ~ 18:00</div>
+            <div class="card-applicants">확정 완료</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-label">홈</span>
+        </div>
+        <div class="tab">
+          <span class="tab-icon">📆</span>
+          <span class="tab-label">캘린더</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ 4. 신청자 목록 (사장님) ═══════════════════════ -->
+<div class="section-group">
+  <p class="phone-label">④ 신청자 목록 (사장님)</p>
+  <div class="phone">
+    <div class="screen">
+      <div class="header" style="flex-shrink:0">
+        <p style="color:rgba(255,255,255,0.85);font-size:15px;margin-bottom:10px;cursor:pointer">← 뒤로</p>
+        <div style="font-size:26px;font-weight:900">2024-03-20</div>
+        <div style="font-size:15px;opacity:0.85;margin-top:4px">🕐 18:00 ~ 22:00</div>
+      </div>
+      <div class="screen-content" style="padding:16px">
+        <p style="font-size:16px;font-weight:800;color:#212121;margin-bottom:12px">신청자 목록 (2명)</p>
+        <div class="applicant-card">
+          <div class="card-top">
+            <View>
+              <span class="applicant-name">👤 김알바</span>
+              <div style="font-size:12px;color:#FF7043;font-style:italic;margin-top:4px;padding-left:4px">“저 보건증 보관 중이고 10분 일찍 갈 수 있어요!”</div>
+            </View>
+            <span class="badge badge-pending">대기중</span>
+          </div>
+          <div class="btn-row">
+            <button class="accept-btn">✅ 승인</button>
+            <button class="reject-btn">❌ 거절</button>
+          </div>
+        </div>
+        <div class="applicant-card">
+          <div class="card-top">
+            <span class="applicant-name">👤 박대타</span>
+            <span class="badge badge-pending">대기중</span>
+          </div>
+          <div class="btn-row">
+            <button class="accept-btn">✅ 승인</button>
+            <button class="reject-btn">❌ 거절</button>
+          </div>
+        </div>
+        <div class="applicant-card" style="opacity:0.5">
+          <div class="card-top">
+            <span class="applicant-name">👤 이지원</span>
+            <span class="badge badge-closed" style="background:#FFEBEE;color:#F44336">❌ 거절됨</span>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></div>
+        <div class="tab"><span class="tab-icon">📆</span><span class="tab-label">캘린더</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ 5. 알바생 홈 ═══════════════════════ -->
+<div class="section-group">
+  <p class="phone-label">⑤ 알바생 홈</p>
+  <div class="phone">
+    <div class="screen">
+      <div class="header" style="flex-shrink:0">
+        <div class="header-row">
+          <div>
+            <div class="greeting">안녕하세요, 김알바님 👋</div>
+            <div class="store-name">☕ 스타벅스 강남점</div>
+          </div>
+          <button class="logout-btn">로그아웃</button>
+        </div>
+      </div>
+      <div class="screen-content">
+        <div class="section-header">
+          <span class="section-title">📋 대타 요청 목록</span>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-top">
+              <span class="card-date">2024-03-20</span>
+              <span class="badge badge-open">신청 가능</span>
+            </div>
+            <div class="card-time">🕐 18:00 ~ 22:00</div>
+            <div class="tap-hint">탭하여 신청하기 →</div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <span class="card-date">2024-03-22</span>
+              <span class="badge badge-open">신청 가능</span>
+            </div>
+            <div class="card-time">🕐 10:00 ~ 14:00</div>
+            <div class="tap-hint">탭하여 신청하기 →</div>
+          </div>
+          <div class="card" style="opacity:0.6">
+            <div class="card-top">
+              <span class="card-date">2024-03-18</span>
+              <span class="badge badge-closed">마감</span>
+            </div>
+            <div class="card-time">🕐 14:00 ~ 18:00</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></div>
+        <div class="tab"><span class="tab-icon">📆</span><span class="tab-label">캘린더</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ 6. 대타 신청 ═══════════════════════ -->
+<div class="section-group">
+  <p class="phone-label">⑥ 대타 요청 상세 (알바생)</p>
+  <div class="phone">
+    <div class="screen">
+      <div class="screen-content">
+        <div class="shift-detail-hero">
+          <p class="shift-back">← 뒤로</p>
+          <p class="shift-label-small">대타 요청 상세</p>
+          <div class="shift-date-big">2024-03-20</div>
+          <div class="shift-time-big">🕐 18:00 ~ 22:00</div>
+          <span class="status-pill">신청 가능</span>
+        </div>
+        <div style="padding:0 24px">
+          <div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:16px;border-left:4px solid #FF7043;box-shadow:0 2px 10px rgba(0,0,0,0.05)">
+            <p style="font-size:13px;font-weight:700;color:#FF7043;margin-bottom:8px">사장님께 남길 메모 (선택)</p>
+            <p style="font-size:14px;color:#9E9E9E">보건증 보관 중이고 10분 일찍 갈 수 있어요!</p>
+          </div>
+          <button class="apply-btn-big">🙋 대타 신청하기</button>
+          <div style="background:#F5F5F5;border-radius:14px;padding:18px;text-align:center">
+            <p style="font-size:14px;color:#9E9E9E">신청하면 사장님께 알림이 전송됩니다</p>
+            <p style="font-size:13px;color:#BDBDBD;margin-top:6px">승인 여부는 캘린더에서 확인하세요</p>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></div>
+        <div class="tab"><span class="tab-icon">📆</span><span class="tab-label">캘린더</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ 7. 캘린더 ═══════════════════════ -->
+<div class="section-group">
+  <p class="phone-label">⑦ 캘린더 화면</p>
+  <div class="phone">
+    <div class="screen">
+      <div class="header" style="flex-shrink:0">
+        <div style="font-size:22px;font-weight:800">📅 근무 캘린더</div>
+      </div>
+      <div class="screen-content">
+        <div class="calendar-grid">
+          <div style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,0.07)">
+            <div class="cal-header">
+              <span class="cal-arrow">‹</span>
+              <span class="cal-month">2024년 3월</span>
+              <span class="cal-arrow">›</span>
+            </div>
+            <div class="cal-days-header">
+              <div class="cal-day-name" style="color:#F44336">일</div>
+              <div class="cal-day-name">월</div>
+              <div class="cal-day-name">화</div>
+              <div class="cal-day-name">수</div>
+              <div class="cal-day-name">목</div>
+              <div class="cal-day-name">금</div>
+              <div class="cal-day-name" style="color:#2196F3">토</div>
+            </div>
+            <div class="cal-days">
+              <!-- 빈 칸 (3월 1일이 금요일) -->
+              <div class="cal-day empty">-</div><div class="cal-day empty">-</div><div class="cal-day empty">-</div><div class="cal-day empty">-</div><div class="cal-day empty">-</div>
+              <div class="cal-day">1</div><div class="cal-day" style="color:#2196F3">2</div>
+              <div class="cal-day" style="color:#F44336">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div><div class="cal-day" style="color:#2196F3">9</div>
+              <div class="cal-day" style="color:#F44336">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day">15</div><div class="cal-day" style="color:#2196F3">16</div>
+              <div class="cal-day" style="color:#F44336">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day today">20</div><div class="cal-day has-event">21</div><div class="cal-day">22</div><div class="cal-day has-event" style="color:#2196F3">23</div>
+              <div class="cal-day" style="color:#F44336">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day has-event">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day" style="color:#2196F3">30</div>
+              <div class="cal-day" style="color:#F44336">31</div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#FF7043"></div>모집 중</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#4CAF50"></div>확정됨</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#9E9E9E"></div>마감</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><span class="tab-icon">🏡</span><span class="tab-label">홈</span></div>
+        <div class="tab active"><span class="tab-icon">📅</span><span class="tab-label" >캘린더</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

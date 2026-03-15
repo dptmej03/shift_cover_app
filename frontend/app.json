@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "대타 앱",
+    "slug": "daeta-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF7043"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.daeta.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF7043"
+      },
+      "package": "com.daeta.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

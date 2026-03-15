@@ -1,0 +1,24 @@
+# Backend
+__pycache__/
+*.py[cod]
+*$py.class
+backend/daeta.db
+backend/daeta.db-journal
+.env
+venv/
+env/
+
+# Frontend
+node_modules/
+.expo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+web-build/
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
