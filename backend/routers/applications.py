@@ -94,7 +94,7 @@ def update_application_status(
 
     application.status = req.status
 
-    # 승인 시 해당 shift를 closed로, 다른 신청은 rejected로
+    # 승인 시 해당 shift를 closed로, 다른 신청은 rejected로, WorkSchedule 자동 생성
     if req.status == models.ApplicationStatus.accepted:
         shift.status = models.ShiftStatus.closed
         others = db.query(models.Application).filter(
@@ -104,6 +104,18 @@ def update_application_status(
         ).all()
         for other in others:
             other.status = models.ApplicationStatus.rejected
+
+        # 대타 근무 일정 자동 생성 (캘린더+급여 자동 반영)
+        work_schedule = models.WorkSchedule(
+            store_id=shift.store_id,
+            employee_id=application.employee_id,
+            date=shift.date,
+            start_time=shift.start_time,
+            end_time=shift.end_time,
+            schedule_type=models.ScheduleType.substitute,
+            shift_request_id=shift.id,
+        )
+        db.add(work_schedule)
 
     db.commit()
     db.refresh(application)

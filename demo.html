@@ -287,6 +287,70 @@
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #757575; }
   .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
+  /* ── 급여 배너 ── */
+  .wage-banner {
+    background: linear-gradient(135deg, #FF7043 0%, #FF5722 100%);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+  .banner-col { display: flex; flex-direction: column; }
+  .banner-label { font-size: 11px; color: rgba(255,255,255,0.8); margin-bottom: 2px; }
+  .banner-value { font-size: 20px; font-weight: 800; color: #fff; }
+  .banner-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.3); }
+  .hourly-badge { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 10px; margin-left: auto; }
+  .hourly-badge-text { font-size: 11px; color: #fff; font-weight: 700; }
+
+  /* ── 근무 일정 카드 ── */
+  .schedule-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .type-pill {
+    border-radius: 8px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .type-fixed { background: #E3F2FD; color: #1565C0; }
+  .type-sub { background: #FFF3EF; color: #FF7043; }
+
+  /* ── 급여 집계 카드 ── */
+  .emp-wage-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .emp-wage-name { font-size: 15px; font-weight: 700; color: #212121; }
+  .emp-wage-detail { font-size: 12px; color: #9E9E9E; margin-top: 2px; }
+  .emp-wage-amount { font-size: 14px; font-weight: 700; color: #FF7043; margin-top: 4px; }
+  .wage-set-btn { background: #F5F5F5; border: none; border-radius: 10px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: #555; cursor: pointer; margin-left: auto; white-space: nowrap; }
+
+  /* ── 요약 배너 ── */
+  .summary-card {
+    background: #FFF3EF;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 4px solid #FF7043;
+  }
+  .summary-title { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 4px; }
+  .summary-total { font-size: 16px; font-weight: 800; color: #212121; }
+
   /* ── 레이아웃 타이틀 ── */
   .section-group { display: flex; flex-direction: column; align-items: center; }
 </style>
@@ -319,33 +383,76 @@
   </div>
 </div>
 
-<!-- ═══════════════════════ 2. 회원가입 ═══════════════════════ -->
+<!-- ═══════════════════════ 2a. 회원가입 – 사장님 ═══════════════════════ -->
 <div class="section-group">
-  <p class="phone-label">② 회원가입 (역할 선택)</p>
+  <p class="phone-label">② 회원가입 (사장님)</p>
   <div class="phone">
     <div class="screen">
-      <div class="screen-content" style="padding: 28px; padding-top: 60px;">
-        <p style="color:#FF7043;font-size:15px;margin-bottom:8px;cursor:pointer">← 뒤로</p>
-        <h2 style="font-size:28px;font-weight:800;color:#212121;margin-bottom:24px">회원가입</h2>
-        <div class="form-card">
-          <label class="form-label" style="margin-top:0">나는 누구인가요?</label>
-          <div class="role-row">
-            <div class="role-card">
-              <span class="role-card-emoji">👑 사장님</span>
-              <span class="role-card-desc">매장 관리 및 대타 요청</span>
-            </div>
-            <div class="role-card active">
-              <span class="role-card-emoji">👤 알바생</span>
-              <span class="role-card-desc">대타 신청 및 일정 확인</span>
-            </div>
+      <div class="screen-content" style="padding: 24px; padding-top: 56px;">
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-size:44px">☕</div>
+          <div style="font-size:24px;font-weight:800;color:#212121">Daeta 회원가입</div>
+          <div style="font-size:13px;color:#9E9E9E;margin-top:4px">시작하기 전에 역할을 선택해주세요</div>
+        </div>
+        <div class="role-row">
+          <div class="role-card active">
+            <span class="role-card-emoji">🏠 사장님</span>
+            <span class="role-card-desc">매장 운영 & 대타 관리</span>
           </div>
-          <label class="form-label">이름</label>
+          <div class="role-card">
+            <span class="role-card-emoji">👋 알바생</span>
+            <span class="role-card-desc">대타 신청 & 일정 확인</span>
+          </div>
+        </div>
+        <div class="form-card" style="margin-top:12px">
+          <label class="form-label" style="margin-top:0">이름</label>
+          <input class="form-input" value="홍사장" readonly />
+          <label class="form-label">이메일</label>
+          <input class="form-input" value="boss@cafe.com" readonly />
+          <label class="form-label">비밀번호</label>
+          <input class="form-input" type="password" value="password" readonly />
+          <label class="form-label">매장명</label>
+          <input class="form-input" value="스타벅스 강남점" readonly />
+          <div style="font-size:12px;color:#FF7043;margin-top:6px">💡 입력하시면 초대 코드가 자동으로 생성됩니다!</div>
+          <button class="form-btn" style="margin-top:18px">가입하기 🎉</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ 2b. 회원가입 – 알바생 ═══════════════════════ -->
+<div class="section-group">
+  <p class="phone-label">② 회원가입 (알바생)</p>
+  <div class="phone">
+    <div class="screen">
+      <div class="screen-content" style="padding: 24px; padding-top: 56px;">
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-size:44px">☕</div>
+          <div style="font-size:24px;font-weight:800;color:#212121">Daeta 회원가입</div>
+          <div style="font-size:13px;color:#9E9E9E;margin-top:4px">시작하기 전에 역할을 선택해주세요</div>
+        </div>
+        <div class="role-row">
+          <div class="role-card">
+            <span class="role-card-emoji">🏠 사장님</span>
+            <span class="role-card-desc">매장 운영 & 대타 관리</span>
+          </div>
+          <div class="role-card active">
+            <span class="role-card-emoji">👋 알바생</span>
+            <span class="role-card-desc">대타 신청 & 일정 확인</span>
+          </div>
+        </div>
+        <div class="form-card" style="margin-top:12px">
+          <label class="form-label" style="margin-top:0">이름</label>
           <input class="form-input" value="김알바" readonly />
           <label class="form-label">이메일</label>
           <input class="form-input" value="alba@email.com" readonly />
           <label class="form-label">비밀번호</label>
           <input class="form-input" type="password" value="password" readonly />
-          <button class="form-btn">가입하기</button>
+          <label class="form-label">초대 코드</label>
+          <input class="form-input" value="A1B2C3" readonly style="letter-spacing:4px;font-weight:700" />
+          <div style="font-size:12px;color:#FF7043;margin-top:6px">💡 사장님께 초대 코드를 받아 입력해주세요.</div>
+          <button class="form-btn" style="margin-top:18px">가입하기 🎉</button>
         </div>
       </div>
     </div>
@@ -548,52 +655,179 @@
   </div>
 </div>
 
-<!-- ═══════════════════════ 7. 캘린더 ═══════════════════════ -->
+<!-- ═══════════════════════ 7a. 사장님 캘린더 ═══════════════════════ -->
 <div class="section-group">
-  <p class="phone-label">⑦ 캘린더 화면</p>
+  <p class="phone-label">⑦ 사장님 캘린더 (급여 & 근무)</p>
   <div class="phone">
     <div class="screen">
-      <div class="header" style="flex-shrink:0">
-        <div style="font-size:22px;font-weight:800">📅 근무 캘린더</div>
-      </div>
       <div class="screen-content">
+        <!-- 캘린더 -->
         <div class="calendar-grid">
           <div style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,0.07)">
             <div class="cal-header">
               <span class="cal-arrow">‹</span>
-              <span class="cal-month">2024년 3월</span>
+              <span class="cal-month">2026년 3월</span>
               <span class="cal-arrow">›</span>
             </div>
             <div class="cal-days-header">
               <div class="cal-day-name" style="color:#F44336">일</div>
-              <div class="cal-day-name">월</div>
-              <div class="cal-day-name">화</div>
-              <div class="cal-day-name">수</div>
-              <div class="cal-day-name">목</div>
+              <div class="cal-day-name">월</div><div class="cal-day-name">화</div>
+              <div class="cal-day-name">수</div><div class="cal-day-name">목</div>
               <div class="cal-day-name">금</div>
               <div class="cal-day-name" style="color:#2196F3">토</div>
             </div>
             <div class="cal-days">
-              <!-- 빈 칸 (3월 1일이 금요일) -->
-              <div class="cal-day empty">-</div><div class="cal-day empty">-</div><div class="cal-day empty">-</div><div class="cal-day empty">-</div><div class="cal-day empty">-</div>
+              <div class="cal-day empty">-</div>
               <div class="cal-day">1</div><div class="cal-day" style="color:#2196F3">2</div>
-              <div class="cal-day" style="color:#F44336">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div><div class="cal-day" style="color:#2196F3">9</div>
-              <div class="cal-day" style="color:#F44336">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day">15</div><div class="cal-day" style="color:#2196F3">16</div>
-              <div class="cal-day" style="color:#F44336">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day today">20</div><div class="cal-day has-event">21</div><div class="cal-day">22</div><div class="cal-day has-event" style="color:#2196F3">23</div>
-              <div class="cal-day" style="color:#F44336">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day has-event">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day" style="color:#2196F3">30</div>
-              <div class="cal-day" style="color:#F44336">31</div>
+              <div class="cal-day" style="color:#F44336">3</div>
+              <div class="cal-day has-event">4</div><div class="cal-day has-event">5</div>
+              <div class="cal-day">6</div><div class="cal-day" style="color:#2196F3">7</div>
+              <div class="cal-day" style="color:#F44336">8</div>
+              <div class="cal-day">9</div><div class="cal-day">10</div>
+              <div class="cal-day">11</div><div class="cal-day has-event">12</div>
+              <div class="cal-day">13</div><div class="cal-day" style="color:#2196F3">14</div>
+              <div class="cal-day" style="color:#F44336">15</div>
+              <div class="cal-day today">16</div><div class="cal-day">17</div>
+              <div class="cal-day">18</div><div class="cal-day">19</div>
+              <div class="cal-day has-event" style="color:#2196F3">20</div>
+              <div class="cal-day" style="color:#F44336">21</div>
+              <div class="cal-day">22</div><div class="cal-day">23</div>
+              <div class="cal-day has-event">24</div><div class="cal-day">25</div>
+              <div class="cal-day" style="color:#2196F3">26</div>
+              <div class="cal-day" style="color:#F44336">27</div>
+              <div class="cal-day">28</div><div class="cal-day">29</div>
+              <div class="cal-day">30</div><div class="cal-day has-event">31</div>
             </div>
           </div>
           <div class="legend">
-            <div class="legend-item"><div class="legend-dot" style="background:#FF7043"></div>모집 중</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#4CAF50"></div>확정됨</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#9E9E9E"></div>마감</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#42A5F5"></div>고정 근무</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#FF7043"></div>확정 대타</div>
+          </div>
+        </div>
+        <!-- 급여 요약 -->
+        <div style="padding:0 16px 16px">
+          <div class="summary-card">
+            <div class="summary-title">📊 2026-03 급여 현황</div>
+            <div class="summary-total">총 지급 예상: <span style="color:#FF7043">587,500원</span></div>
+          </div>
+          <div class="emp-wage-card">
+            <div style="flex:1">
+              <div class="emp-wage-name">김알바</div>
+              <div class="emp-wage-detail">32시간 × 10,000원</div>
+              <div class="emp-wage-amount">320,000원</div>
+            </div>
+            <button class="wage-set-btn">시급 설정</button>
+          </div>
+          <div class="emp-wage-card">
+            <div style="flex:1">
+              <div class="emp-wage-name">박대타</div>
+              <div class="emp-wage-detail">19.5시간 × 10,000원</div>
+              <div class="emp-wage-amount">195,000원</div>
+            </div>
+            <button class="wage-set-btn">시급 설정</button>
+          </div>
+          <button style="background:#FF7043;color:#fff;border:none;border-radius:14px;padding:14px;width:100%;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit">+ 고정 근무 등록</button>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><span class="tab-icon">🏡</span><span class="tab-label">홈</span></div>
+        <div class="tab active"><span class="tab-icon">📅</span><span class="tab-label">캘린더</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ 7b. 알바생 캘린더 ═══════════════════════ -->
+<div class="section-group">
+  <p class="phone-label">⑧ 알바생 캘린더 (내 근무 & 급여)</p>
+  <div class="phone">
+    <div class="screen">
+      <!-- 상단 급여 배너 -->
+      <div class="wage-banner">
+        <div class="banner-col">
+          <span class="banner-label">이번 달 총 근무</span>
+          <span class="banner-value">24시간</span>
+        </div>
+        <div class="banner-divider"></div>
+        <div class="banner-col">
+          <span class="banner-label">예상 급여</span>
+          <span class="banner-value">240,000원</span>
+        </div>
+        <div class="hourly-badge"><span class="hourly-badge-text">시급 10,000원</span></div>
+      </div>
+      <div class="screen-content">
+        <!-- 캘린더 -->
+        <div class="calendar-grid">
+          <div style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,0.07)">
+            <div class="cal-header">
+              <span class="cal-arrow">‹</span>
+              <span class="cal-month">2026년 3월</span>
+              <span class="cal-arrow">›</span>
+            </div>
+            <div class="cal-days-header">
+              <div class="cal-day-name" style="color:#F44336">일</div>
+              <div class="cal-day-name">월</div><div class="cal-day-name">화</div>
+              <div class="cal-day-name">수</div><div class="cal-day-name">목</div>
+              <div class="cal-day-name">금</div>
+              <div class="cal-day-name" style="color:#2196F3">토</div>
+            </div>
+            <div class="cal-days">
+              <div class="cal-day empty">-</div>
+              <div class="cal-day">1</div><div class="cal-day" style="color:#2196F3">2</div>
+              <div class="cal-day" style="color:#F44336">3</div>
+              <div class="cal-day has-event">4</div><div class="cal-day">5</div>
+              <div class="cal-day">6</div><div class="cal-day" style="color:#2196F3">7</div>
+              <div class="cal-day" style="color:#F44336">8</div>
+              <div class="cal-day">9</div><div class="cal-day">10</div>
+              <div class="cal-day has-event">11</div><div class="cal-day">12</div>
+              <div class="cal-day">13</div><div class="cal-day" style="color:#2196F3">14</div>
+              <div class="cal-day" style="color:#F44336">15</div>
+              <div class="cal-day today">16</div><div class="cal-day has-event">17</div>
+              <div class="cal-day">18</div><div class="cal-day">19</div>
+              <div class="cal-day has-event" style="color:#2196F3">20</div>
+              <div class="cal-day" style="color:#F44336">21</div>
+              <div class="cal-day">22</div><div class="cal-day">23</div>
+              <div class="cal-day">24</div><div class="cal-day">25</div>
+              <div class="cal-day" style="color:#2196F3">26</div>
+              <div class="cal-day" style="color:#F44336">27</div>
+              <div class="cal-day">28</div><div class="cal-day">29</div>
+              <div class="cal-day">30</div><div class="cal-day">31</div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#42A5F5"></div>고정 근무</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#FF7043"></div>확정 대타</div>
+          </div>
+        </div>
+        <!-- 내 근무 목록 -->
+        <div style="padding:0 16px 20px">
+          <p style="font-size:15px;font-weight:800;color:#212121;margin-bottom:10px">📋 이달 근무 일정</p>
+          <div class="schedule-card">
+            <div class="type-pill type-fixed">고정</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#212121">2026-03-04</div>
+              <div style="font-size:12px;color:#9E9E9E;margin-top:2px">09:00 ~ 18:00</div>
+            </div>
+          </div>
+          <div class="schedule-card">
+            <div class="type-pill type-fixed">고정</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#212121">2026-03-11</div>
+              <div style="font-size:12px;color:#9E9E9E;margin-top:2px">09:00 ~ 18:00</div>
+            </div>
+          </div>
+          <div class="schedule-card">
+            <div class="type-pill type-sub">대타</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#212121">2026-03-20</div>
+              <div style="font-size:12px;color:#9E9E9E;margin-top:2px">18:00 ~ 22:00</div>
+            </div>
           </div>
         </div>
       </div>
       <div class="tab-bar">
         <div class="tab"><span class="tab-icon">🏡</span><span class="tab-label">홈</span></div>
-        <div class="tab active"><span class="tab-icon">📅</span><span class="tab-label" >캘린더</span></div>
+        <div class="tab active"><span class="tab-icon">📅</span><span class="tab-label">캘린더</span></div>
       </div>
     </div>
   </div>

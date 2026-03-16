@@ -15,14 +15,13 @@ import ManagerHomeScreen from '../screens/manager/ManagerHomeScreen';
 import CreateShiftScreen from '../screens/manager/CreateShiftScreen';
 import ApplicantsScreen from '../screens/manager/ApplicantsScreen';
 import CreateStoreScreen from '../screens/manager/CreateStoreScreen';
+import ManagerCalendarScreen from '../screens/manager/ManagerCalendarScreen';
 
 // Employee screens
 import EmployeeHomeScreen from '../screens/employee/EmployeeHomeScreen';
 import ShiftDetailScreen from '../screens/employee/ShiftDetailScreen';
 import JoinStoreScreen from '../screens/employee/JoinStoreScreen';
-
-// Shared
-import CalendarScreen from '../screens/CalendarScreen';
+import EmployeeCalendarScreen from '../screens/employee/EmployeeCalendarScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -42,7 +41,7 @@ function ManagerTabs() {
       })}
     >
       <Tab.Screen name="Home" component={ManagerStack} options={{ title: '홈' }} />
-      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ title: '캘린더' }} />
+      <Tab.Screen name="Calendar" component={ManagerCalendarScreen} options={{ title: '캘린더' }} />
     </Tab.Navigator>
   );
 }
@@ -73,7 +72,7 @@ function EmployeeTabs() {
       })}
     >
       <Tab.Screen name="Home" component={EmployeeStack} options={{ title: '홈' }} />
-      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ title: '캘린더' }} />
+      <Tab.Screen name="Calendar" component={EmployeeCalendarScreen} options={{ title: '캘린더' }} />
     </Tab.Navigator>
   );
 }

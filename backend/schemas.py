@@ -19,12 +19,21 @@ class ShiftStatus(str, Enum):
     closed = "closed"
 
 
+class ScheduleType(str, Enum):
+    fixed = "fixed"
+    substitute = "substitute"
+
+
 # ── Auth ──────────────────────────────────────────────────────────────────────
 class RegisterRequest(BaseModel):
     name: str
     email: EmailStr
     password: str
     role: UserRole
+    # 사장님용 (role=manager)
+    store_name: Optional[str] = None    # 예: "스타벅스 강남점"
+    # 알바생용 (role=employee)
+    invite_code: Optional[str] = None
 
 
 class LoginRequest(BaseModel):
@@ -43,6 +52,7 @@ class UserResponse(BaseModel):
     email: str
     role: UserRole
     store_id: Optional[int] = None
+    hourly_wage: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -108,3 +118,48 @@ class ApplicationResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ── WorkSchedule ──────────────────────────────────────────────────────────────
+class WorkScheduleCreate(BaseModel):
+    employee_id: int
+    date: str          # "YYYY-MM-DD"
+    start_time: str    # "HH:MM"
+    end_time: str      # "HH:MM"
+
+
+class WorkScheduleResponse(BaseModel):
+    id: int
+    store_id: int
+    employee_id: int
+    employee_name: Optional[str] = None
+    date: str
+    start_time: str
+    end_time: str
+    schedule_type: ScheduleType
+    shift_request_id: Optional[int] = None
+
+    class Config:
+        from_attributes = True
+
+
+# ── Wages ─────────────────────────────────────────────────────────────────────
+class HourlyWageUpdate(BaseModel):
+    hourly_wage: int
+
+
+class EmployeeWageSummary(BaseModel):
+    employee_id: int
+    employee_name: str
+    hourly_wage: Optional[int] = None
+    total_minutes: int = 0
+    total_hours: float = 0.0
+    estimated_wage: Optional[int] = None  # hourly_wage * total_hours
+
+
+class MyWageSummary(BaseModel):
+    month: str
+    total_minutes: int
+    total_hours: float
+    hourly_wage: Optional[int] = None
+    estimated_wage: Optional[int] = None

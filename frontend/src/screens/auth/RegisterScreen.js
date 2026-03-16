@@ -1,111 +1,132 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator, KeyboardAvoidingView,
-  Platform, Alert, ScrollView,
+  View, Text, TouchableOpacity, TextInput,
+  StyleSheet, ScrollView, ActivityIndicator, Alert,
 } from 'react-native';
-import { useAuth } from '../../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext';
 
-const ROLES = [
-  { key: 'manager', label: '👑 사장님', desc: '매장 관리 및 대타 요청' },
-  { key: 'employee', label: '👤 알바생', desc: '대타 신청 및 일정 확인' },
-];
+const COLORS = { orange: '#FF7043', bg: '#FFF8F0', card: '#fff', gray: '#9E9E9E' };
 
 export default function RegisterScreen({ navigation }) {
-  const { register } = useAuth();
+  const { register } = useContext(AuthContext);
+  const [role, setRole] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('employee');
+  // 사장님 전용
+  const [storeName, setStoreName] = useState('');
+  // 알바생 전용
+  const [inviteCode, setInviteCode] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    if (!name || !email || !password) {
-      Alert.alert('오류', '모든 항목을 입력해주세요.');
-      return;
-    }
+    if (!role) return Alert.alert('오류', '역할을 선택해주세요.');
+    if (!name || !email || !password) return Alert.alert('오류', '이름, 이메일, 비밀번호를 입력해주세요.');
+    if (role === 'manager' && !storeName) return Alert.alert('오류', '매장명을 입력해주세요. (예: 스타벅스 강남점)');
+    if (role === 'employee' && !inviteCode) return Alert.alert('오류', '초대 코드를 입력해주세요.');
+
     setLoading(true);
     try {
-      await register(name, email, password, role);
+      const payload = { name, email, password, role };
+      if (role === 'manager') payload.store_name = storeName;
+      if (role === 'employee') payload.invite_code = inviteCode.toUpperCase();
+      await register(payload);
     } catch (e) {
-      Alert.alert('회원가입 실패', e.message);
+      Alert.alert('가입 실패', e.message || '다시 시도해주세요.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView contentContainerStyle={styles.inner} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.back}>← 뒤로</Text>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+      <View style={styles.header}>
+        <Text style={styles.logo}>☕</Text>
+        <Text style={styles.title}>Daeta 회원가입</Text>
+        <Text style={styles.sub}>시작하기 전에 역할을 선택해주세요</Text>
+      </View>
+
+      {/* 역할 선택 */}
+      <View style={styles.roleRow}>
+        {[
+          { key: 'manager', icon: '🏠', label: '사장님', desc: '매장 운영 & 대타 관리' },
+          { key: 'employee', icon: '👋', label: '알바생', desc: '대타 신청 & 일정 확인' },
+        ].map(r => (
+          <TouchableOpacity
+            key={r.key}
+            style={[styles.roleCard, role === r.key && styles.roleCardSelected]}
+            onPress={() => setRole(r.key)}
+          >
+            <Text style={styles.roleIcon}>{r.icon}</Text>
+            <Text style={[styles.roleLabel, role === r.key && { color: COLORS.orange }]}>{r.label}</Text>
+            <Text style={styles.roleDesc}>{r.desc}</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>회원가입</Text>
-        </View>
+        ))}
+      </View>
 
-        <View style={styles.form}>
-          {/* 역할 선택 */}
-          <Text style={styles.label}>나는 누구인가요?</Text>
-          <View style={styles.roleRow}>
-            {ROLES.map((r) => (
-              <TouchableOpacity
-                key={r.key}
-                style={[styles.roleCard, role === r.key && styles.roleCardActive]}
-                onPress={() => setRole(r.key)}
-              >
-                <Text style={styles.roleEmoji}>{r.label}</Text>
-                <Text style={[styles.roleDesc, role === r.key && styles.roleDescActive]}>{r.desc}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+      {/* 공통 입력 */}
+      <View style={styles.form}>
+        <Text style={styles.label}>이름</Text>
+        <TextInput style={styles.input} placeholder="홍길동" value={name} onChangeText={setName} />
 
-          <Text style={styles.label}>이름</Text>
-          <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="홍길동" placeholderTextColor="#C0C0C0" />
+        <Text style={styles.label}>이메일</Text>
+        <TextInput style={styles.input} placeholder="example@email.com" keyboardType="email-address"
+          autoCapitalize="none" value={email} onChangeText={setEmail} />
 
-          <Text style={styles.label}>이메일</Text>
-          <TextInput style={styles.input} value={email} onChangeText={setEmail} placeholder="example@email.com" placeholderTextColor="#C0C0C0" keyboardType="email-address" autoCapitalize="none" />
+        <Text style={styles.label}>비밀번호</Text>
+        <TextInput style={styles.input} placeholder="비밀번호 (6자 이상)" secureTextEntry value={password}
+          onChangeText={setPassword} />
 
-          <Text style={styles.label}>비밀번호</Text>
-          <TextInput style={styles.input} value={password} onChangeText={setPassword} placeholder="6자 이상 입력" placeholderTextColor="#C0C0C0" secureTextEntry />
+        {/* 사장님 전용 */}
+        {role === 'manager' && (
+          <>
+            <Text style={styles.label}>매장명</Text>
+            <TextInput style={styles.input} placeholder="예: 스타벅스 강남점"
+              value={storeName} onChangeText={setStoreName} />
+            <Text style={styles.hint}>💡 입력하시면 초대 코드가 자동으로 생성됩니다!</Text>
+          </>
+        )}
 
-          <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-            {loading
-              ? <ActivityIndicator color="#fff" />
-              : <Text style={styles.buttonText}>가입하기</Text>
-            }
-          </TouchableOpacity>
+        {/* 알바생 전용 */}
+        {role === 'employee' && (
+          <>
+            <Text style={styles.label}>초대 코드</Text>
+            <TextInput style={[styles.input, { letterSpacing: 4, textTransform: 'uppercase' }]}
+              placeholder="XXXXXX" autoCapitalize="characters"
+              value={inviteCode} onChangeText={setInviteCode} maxLength={6} />
+            <Text style={styles.hint}>💡 사장님께 초대 코드를 받아 입력해주세요.</Text>
+          </>
+        )}
+      </View>
 
-          <TouchableOpacity style={styles.linkBtn} onPress={() => navigation.goBack()}>
-            <Text style={styles.linkText}>이미 계정이 있으신가요? <Text style={styles.linkBold}>로그인</Text></Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <TouchableOpacity style={[styles.btn, !role && { opacity: 0.4 }]} onPress={handleRegister} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>가입하기 🎉</Text>}
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.loginLink}>이미 계정이 있나요? <Text style={{ color: COLORS.orange }}>로그인</Text></Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF8F5' },
-  inner: { flexGrow: 1, padding: 28, paddingTop: 60 },
-  header: { marginBottom: 28 },
-  back: { color: '#FF7043', fontSize: 15, marginBottom: 8 },
-  title: { fontSize: 28, fontWeight: '800', color: '#212121' },
-  form: { backgroundColor: '#fff', borderRadius: 20, padding: 24, elevation: 4, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
-  label: { fontSize: 13, fontWeight: '600', color: '#757575', marginBottom: 8, marginTop: 14 },
-  input: { backgroundColor: '#F5F5F5', borderRadius: 12, padding: 14, fontSize: 15, color: '#212121' },
-  roleRow: { flexDirection: 'row', gap: 12 },
-  roleCard: { flex: 1, borderRadius: 12, borderWidth: 2, borderColor: '#E0E0E0', padding: 14, alignItems: 'center', backgroundColor: '#FAFAFA' },
-  roleCardActive: { borderColor: '#FF7043', backgroundColor: '#FFF3EF' },
-  roleEmoji: { fontSize: 14, fontWeight: '700', color: '#212121', marginBottom: 4 },
-  roleDesc: { fontSize: 11, color: '#9E9E9E', textAlign: 'center' },
-  roleDescActive: { color: '#FF7043' },
-  button: { backgroundColor: '#FF7043', borderRadius: 14, padding: 16, alignItems: 'center', marginTop: 28 },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  linkBtn: { alignItems: 'center', marginTop: 16 },
-  linkText: { color: '#9E9E9E', fontSize: 13 },
-  linkBold: { color: '#FF7043', fontWeight: '700' },
+  container: { flex: 1, backgroundColor: COLORS.bg },
+  header: { alignItems: 'center', paddingTop: 60, paddingBottom: 24 },
+  logo: { fontSize: 48, marginBottom: 8 },
+  title: { fontSize: 26, fontWeight: '800', color: '#212121' },
+  sub: { fontSize: 14, color: COLORS.gray, marginTop: 4 },
+  roleRow: { flexDirection: 'row', marginHorizontal: 20, gap: 12, marginBottom: 8 },
+  roleCard: { flex: 1, backgroundColor: COLORS.card, borderRadius: 16, padding: 16, alignItems: 'center', borderWidth: 2, borderColor: 'transparent', elevation: 2, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } },
+  roleCardSelected: { borderColor: COLORS.orange, backgroundColor: '#FFF3EF' },
+  roleIcon: { fontSize: 28, marginBottom: 4 },
+  roleLabel: { fontSize: 15, fontWeight: '700', color: '#212121', marginBottom: 2 },
+  roleDesc: { fontSize: 11, color: COLORS.gray, textAlign: 'center' },
+  form: { marginHorizontal: 20, marginTop: 16 },
+  label: { fontSize: 13, fontWeight: '700', color: '#555', marginBottom: 6, marginTop: 14 },
+  input: { backgroundColor: COLORS.card, borderRadius: 12, padding: 14, fontSize: 15, color: '#212121', elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } },
+  hint: { fontSize: 12, color: COLORS.orange, marginTop: 6 },
+  btn: { marginHorizontal: 20, marginTop: 28, backgroundColor: COLORS.orange, borderRadius: 16, padding: 18, alignItems: 'center', elevation: 4, shadowColor: COLORS.orange, shadowOpacity: 0.35, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
+  btnText: { color: '#fff', fontSize: 17, fontWeight: '800' },
+  loginLink: { textAlign: 'center', marginTop: 20, fontSize: 14, color: COLORS.gray },
 });
